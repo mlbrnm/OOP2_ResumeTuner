@@ -15,9 +15,10 @@ namespace FinalProjectResumeTuner
                 });
 
             builder.Services.AddMauiBlazorWebView();
+            builder.Services.AddSingleton<DatabaseBroker>();
 
 #if DEBUG
-    		builder.Services.AddBlazorWebViewDeveloperTools();
+            builder.Services.AddBlazorWebViewDeveloperTools();
     		builder.Logging.AddDebug();
 #endif
 

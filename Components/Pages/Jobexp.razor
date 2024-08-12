@@ -1,0 +1,17 @@
+﻿@page "/jobexp"
+@inject DatabaseBroker db
+
+<h1>Job Experience</h1>
+
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        if (db == null)
+        {
+            DatabaseBroker db = new DatabaseBroker();
+            db.Initialize();
+        }
+
+    }
+}

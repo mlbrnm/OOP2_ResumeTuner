@@ -1,5 +1,21 @@
 ﻿@page "/"
+@inject DatabaseBroker db
 
-<h1>Hello, world!</h1>
+<div class="d-flex flex-column align-items-center gap-3" style="height: 100vh;">
+    <h1 style="margin-top: 100px; font-size: 2.5rem; font-weight:bold">Welcome to Resume Tuner.</h1>
+    <div class="align-middle text-center" style="max-width: 500px; font-size:large">
+        Use the "Manage Experience" panel to add, edit, or delete your work experience, and then head to the "Generate Resume" panel to create a customized resume for a specific job application.
+    </div>
+</div>
 
-Welcome to your new app.
+@code{
+    protected override async Task OnInitializedAsync()
+    {   
+        if (db == null)
+        {
+            DatabaseBroker db = new DatabaseBroker();
+            db.Initialize();
+        }
+
+    }
+}
