@@ -10,6 +10,7 @@ namespace FinalProjectResumeTuner
 {
 	public class DatabaseBroker
 	{
+		// Initialize the lists to store the data
 		public List<Job> JobList = new List<Job>();
 		public List<JobDetails> JobDetailsList = new List<JobDetails>();
 		public List<Edu> EduList = new List<Edu>();
@@ -33,6 +34,7 @@ namespace FinalProjectResumeTuner
 			connection = new MySqlConnection(builder.ConnectionString);
 		}
 
+		// This reloads everything after you change anything in the database. Not very efficient but it works for this single user application pretty well.
 		public void Reset()
         {
 			this.JobList.Clear();
@@ -81,6 +83,7 @@ namespace FinalProjectResumeTuner
 			}
 		}
 
+		// Add a job to the database
 		public void AddJob(string jobtitle, string company, DateTime startdate, DateTime enddate, string description)
         {
 			int id = GetHighestJobID() + 1;
@@ -94,6 +97,7 @@ namespace FinalProjectResumeTuner
             }
         }
 
+		// Add a job detail to the database
 		public void AddJobDetails(int jobid, string details)
         {
             string query = $"INSERT INTO jobdetails (job, details) VALUES({jobid}, '{details}')";
@@ -106,6 +110,7 @@ namespace FinalProjectResumeTuner
             }
         }
 
+		// Add an education entry to the database
 		public void AddEdu(int id, DateTime startdate, DateTime enddate, string schoolname, string programname)
         {
             string query = $"INSERT INTO eduexp (id, startdate, enddate, schoolname, programname) VALUES({id}, '{startdate.ToString("yyyy-MM-dd")}', '{enddate.ToString("yyyy-MM-dd")}', '{schoolname}', '{programname}')";
@@ -118,6 +123,7 @@ namespace FinalProjectResumeTuner
             }
         }
 
+		// Get the highest job ID in the database
 		public int GetHighestJobID()
         {
             string query = "SELECT MAX(id) FROM jobexp";
@@ -140,6 +146,7 @@ namespace FinalProjectResumeTuner
             return id;
         }
 
+		// Get the highest job detail ID in the database
 		public int GetHighestJobDetailID()
         {
             string query = "SELECT MAX(detailid) FROM jobdetails";
@@ -162,7 +169,7 @@ namespace FinalProjectResumeTuner
             return id;
         }
 
-		// Load all customers from the database
+		// Load the job experience from the database into the JobList
 		public void LoadJobExp()
 		{
 			string query = "SELECT id, jobtitle, company, startdate, enddate, description FROM jobexp";
@@ -191,6 +198,7 @@ namespace FinalProjectResumeTuner
 			}
 		}
 
+		// Load the job details from the database into the JobDetailsList
         public void LoadJobDetails()
         {
             string query = "SELECT job, details, detailid FROM jobdetails";
@@ -208,7 +216,6 @@ namespace FinalProjectResumeTuner
 
                     JobDetails jobDetails = new JobDetails(details, detailId);
 
-                    // Find the job with the matching id and add the job details
                     Job job = JobList.FirstOrDefault(j => j.Id == jobId);
                     if (job != null)
                     {
@@ -223,6 +230,7 @@ namespace FinalProjectResumeTuner
             }
         }
 
+		// Load the education experience from the database into the EduList
         public void LoadEduExp()
         {
             string query = "SELECT id, startdate, enddate, schoolname, programname FROM eduexp";
@@ -250,6 +258,7 @@ namespace FinalProjectResumeTuner
             }
         }
 
+		// Update a job in the database
         public void UpdateJob(int id, string jobtitle, string company, DateTime startdate, DateTime enddate, string description)
 		{
 			string query = $"UPDATE jobexp SET jobtitle = '{jobtitle}', company = '{company}', startdate = '{startdate.ToString("yyyy-MM-dd")}', enddate = '{enddate.ToString("yyyy-MM-dd")}', description = '{description}' WHERE id = {id}";
@@ -262,6 +271,7 @@ namespace FinalProjectResumeTuner
 			}
 		}
 
+		// Update a job detail in the database
 		public void UpdateJobDetails(int jobid, string details, int detailid)
 		{
 			string query = $"UPDATE jobdetails SET details = '{details}' WHERE detailid = {detailid}";
@@ -275,6 +285,7 @@ namespace FinalProjectResumeTuner
 
 		}
 
+		// Update an education entry in the database
 		public void UpdateEdu(int id, DateTime startdate, DateTime enddate, string schoolname, string programname)
 		{
 			string query = $"UPDATE eduexp SET startdate = '{startdate.ToString("yyyy-MM-dd")}', enddate = '{enddate.ToString("yyyy-MM-dd")}', schoolname = '{schoolname}', programname = '{programname}' WHERE id = {id}";
@@ -287,6 +298,7 @@ namespace FinalProjectResumeTuner
 			}
 		}
 
+		// Delete a job from the database
 		public void DeleteJob(int id)
 		{
 			string query = $"DELETE FROM jobexp WHERE id = {id}";
@@ -299,6 +311,7 @@ namespace FinalProjectResumeTuner
 			}
 		}
 
+		// Delete an education entry from the database
 		public void DeleteJobDetails(int detailid)
 		{
 			string query = $"DELETE FROM jobdetails WHERE detailid = {detailid}";

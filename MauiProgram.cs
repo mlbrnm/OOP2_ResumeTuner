@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 
+
 namespace FinalProjectResumeTuner
 {
     public static class MauiProgram
@@ -16,7 +17,7 @@ namespace FinalProjectResumeTuner
 
             builder.Services.AddMauiBlazorWebView();
             builder.Services.AddSingleton<DatabaseBroker>();
-            builder.Services.AddSingleton<ChatGPTEngine>();
+            builder.Services.AddSingleton<AIProcessor>();
 
 #if DEBUG
             builder.Services.AddBlazorWebViewDeveloperTools();
@@ -29,6 +30,8 @@ namespace FinalProjectResumeTuner
             var db = app.Services.GetRequiredService<DatabaseBroker>();
             db.Initialize();
             db.Reset();
+
+            var ai = app.Services.GetRequiredService<AIProcessor>();
 
             return app;
         }

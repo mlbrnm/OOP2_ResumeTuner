@@ -53,7 +53,33 @@
     }
 </div>
 
+<h1>Education</h1>
+
+<div class="edu-tree">
+    @foreach (var edu in db.EduList)
+    {
+        <div class="edu-item">
+            @if (editEduId == edu.Id)
+            {
+                <input type="text" @bind="editSchool" placeholder="School Name" />
+                <input type="text" @bind="editProgram" placeholder="Program Name" />
+                <input type="month" @bind="editEduStartDate" />
+                <input type="month" @bind="editEduEndDate" />
+                <button style="margin-left:16px;" class="btn btn-primary" @onclick="() => SaveEdu(edu.Id)">Save</button>
+                <button style="margin-left:16px;" class="btn btn-secondary" @onclick="CancelEditEdu">Cancel</button>
+            }
+            else
+            {
+                <h3>@edu.Program at @edu.School</h3>
+                <p>@edu.StartDate.ToString("yyyy") to @edu.EndDate.ToString("yyyy")</p>
+                <button style="margin-left:16px;" class="btn btn-link" @onclick="() => EditEdu(edu.Id, edu.School, edu.Program, edu.StartDate, edu.EndDate)"> Edit Education </button>
+            }
+        </div>
+    }
+</div>
+
 @code {
+    // Create variables to store the details of the job being edited
     private string newDetailText;
     private string editDetailText;
     private int editDetailId;
@@ -65,6 +91,7 @@
     private DateTime editEndDate;
     private string editDescription;
 
+    // Add a new detail to the job
     private void AddJobDetail(int jobId)
     {
         if (!string.IsNullOrWhiteSpace(newDetailText))
@@ -75,12 +102,14 @@
         }
     }
 
+    // Edit a detail of the job
     private void EditJobDetail(int detailId, string detailText)
     {
         editDetailId = detailId;
         editDetailText = detailText;
     }
 
+    // Save the edited detail of the job
     private void SaveJobDetail(int jobId, int detailId)
     {
         if (!string.IsNullOrWhiteSpace(editDetailText))
@@ -92,12 +121,14 @@
         }
     }
 
+    // Cancel the edit of the detail of the job
     private void CancelEditDetail()
     {
         editDetailId = 0;
         editDetailText = string.Empty;
     }
 
+    // Edit a job
     private void EditJob(int jobId, string jobTitle, string company, DateTime startDate, DateTime endDate, string description)
     {
         editJobId = jobId;
@@ -108,6 +139,7 @@
         editDescription = description;
     }
 
+    // Save the edited job
     private void SaveJob(int jobId)
     {
         if (!string.IsNullOrWhiteSpace(editJobTitle) && !string.IsNullOrWhiteSpace(editCompany) && editStartDate != default && editEndDate != default && !string.IsNullOrWhiteSpace(editDescription))
@@ -123,6 +155,7 @@
         }
     }
 
+    // Cancel the edit of the job
     private void CancelEditJob()
     {
         editJobId = 0;
@@ -132,14 +165,52 @@
         editEndDate = default;
         editDescription = string.Empty;
     }
+
+    // Variables to store the details of the education being edited
+    private int editEduId;
+    private string editSchool;
+    private string editProgram;
+    private DateTime editEduStartDate;
+    private DateTime editEduEndDate;
+
+    // Edit an education
+    private void EditEdu(int eduId, string school, string program, DateTime startDate, DateTime endDate)
+    {
+        editEduId = eduId;
+        editSchool = school;
+        editProgram = program;
+        editEduStartDate = startDate;
+        editEduEndDate = endDate;
+    }
+
+    // Save the edited education
+    private void SaveEdu(int eduId)
+    {
+        if (!string.IsNullOrWhiteSpace(editSchool) && !string.IsNullOrWhiteSpace(editProgram) && editEduStartDate != default && editEduEndDate != default)
+        {
+            db.UpdateEdu(eduId, editEduStartDate, editEduEndDate, editSchool, editProgram);
+            db.Reset();
+            CancelEditEdu();
+        }
+    }
+
+    // Cancel the edit of the education
+    private void CancelEditEdu()
+    {
+        editEduId = 0;
+        editSchool = string.Empty;
+        editProgram = string.Empty;
+        editEduStartDate = default;
+        editEduEndDate = default;
+    }
 }
 
 <style>
-    .job-tree {
+    .job-tree, .edu-tree {
         margin-top: 20px;
     }
 
-    .job-item {
+    .job-item, .edu-item {
         margin-bottom: 20px;
         padding: 10px;
         border: 1px solid #ddd;
