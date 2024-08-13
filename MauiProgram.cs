@@ -16,13 +16,21 @@ namespace FinalProjectResumeTuner
 
             builder.Services.AddMauiBlazorWebView();
             builder.Services.AddSingleton<DatabaseBroker>();
+            builder.Services.AddSingleton<ChatGPTEngine>();
 
 #if DEBUG
             builder.Services.AddBlazorWebViewDeveloperTools();
-    		builder.Logging.AddDebug();
+            builder.Logging.AddDebug();
 #endif
 
-            return builder.Build();
+            var app = builder.Build();
+
+            // Load data when the application starts
+            var db = app.Services.GetRequiredService<DatabaseBroker>();
+            db.Initialize();
+            db.Reset();
+
+            return app;
         }
     }
 }

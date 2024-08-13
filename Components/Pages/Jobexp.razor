@@ -1,17 +1,153 @@
 ﻿@page "/jobexp"
 @inject DatabaseBroker db
 
-<h1>Job Experience</h1>
+<h1>Work Experience</h1>
 
+<div class="job-tree">
+    @foreach (var job in db.JobList)
+    {
+        <div class="job-item">
+            @if (editJobId == job.Id)
+            {
+                <input type="text" @bind="editJobTitle" placeholder="Job Title" />
+                <input type="text" @bind="editCompany" placeholder="Company" />
+                <input type="month" @bind="editStartDate" />
+                <input type="month" @bind="editEndDate" />
+                <textarea @bind="editDescription" placeholder="Description"></textarea>
+                <button style="margin-left:16px;" class="btn btn-primary" @onclick="() => SaveJob(job.Id)">Save</button>
+                <button style="margin-left:16px;" class="btn btn-secondary" @onclick="CancelEditJob">Cancel</button>
+            }
+            else
+            {
+                <h3>@job.JobTitle at @job.Company</h3>
+                <p>@job.StartDate.ToString("MMM yyyy") to @job.EndDate.ToString("MMM yyyy")</p>
+                <p>@job.Description</p>
+                <button style="margin-left:16px;" class="btn btn-link" @onclick="() => EditJob(job.Id, job.JobTitle, job.Company, job.StartDate, job.EndDate, job.Description)"> Edit Position / Company / Dates </button>
+            }
+
+            @if (job.DetailList.Any())
+            {
+                <ul class="job-details">
+                    @foreach (var detail in job.DetailList)
+                    {
+                        <li>
+                            @if (editDetailId == detail.DetailID)
+                            {
+                                <input type="text" @bind="editDetailText" />
+                                <button style="margin-left:16px;" class="btn btn-primary" @onclick="() => SaveJobDetail(job.Id, detail.DetailID)">Save</button>
+                                <button style="margin-left:16px;" class="btn btn-secondary" @onclick="CancelEditDetail">Cancel</button>
+                            }
+                            else
+                            {
+                                @detail.Details
+                                <button style="margin-left:16px;" class="btn btn-link" @onclick="() => EditJobDetail(detail.DetailID, detail.Details)"> ✎ </button>
+                            }
+                        </li>
+                    }
+                </ul>
+            }
+
+            <input type="text" @bind="newDetailText" placeholder="Add new detail" />
+            <button style="margin-left:16px;" class="btn btn-primary" @onclick="() => AddJobDetail(job.Id)">Add Detail</button>
+        </div>
+    }
+</div>
 
 @code {
-    protected override async Task OnInitializedAsync()
-    {
-        if (db == null)
-        {
-            DatabaseBroker db = new DatabaseBroker();
-            db.Initialize();
-        }
+    private string newDetailText;
+    private string editDetailText;
+    private int editDetailId;
 
+    private int editJobId;
+    private string editJobTitle;
+    private string editCompany;
+    private DateTime editStartDate;
+    private DateTime editEndDate;
+    private string editDescription;
+
+    private void AddJobDetail(int jobId)
+    {
+        if (!string.IsNullOrWhiteSpace(newDetailText))
+        {
+            db.AddJobDetails(jobId, newDetailText);
+            db.Reset();
+            newDetailText = string.Empty;
+        }
+    }
+
+    private void EditJobDetail(int detailId, string detailText)
+    {
+        editDetailId = detailId;
+        editDetailText = detailText;
+    }
+
+    private void SaveJobDetail(int jobId, int detailId)
+    {
+        if (!string.IsNullOrWhiteSpace(editDetailText))
+        {
+            db.UpdateJobDetails(jobId, editDetailText, detailId);
+            db.Reset();
+            editDetailId = 0;
+            editDetailText = string.Empty;
+        }
+    }
+
+    private void CancelEditDetail()
+    {
+        editDetailId = 0;
+        editDetailText = string.Empty;
+    }
+
+    private void EditJob(int jobId, string jobTitle, string company, DateTime startDate, DateTime endDate, string description)
+    {
+        editJobId = jobId;
+        editJobTitle = jobTitle;
+        editCompany = company;
+        editStartDate = startDate;
+        editEndDate = endDate;
+        editDescription = description;
+    }
+
+    private void SaveJob(int jobId)
+    {
+        if (!string.IsNullOrWhiteSpace(editJobTitle) && !string.IsNullOrWhiteSpace(editCompany) && editStartDate != default && editEndDate != default && !string.IsNullOrWhiteSpace(editDescription))
+        {
+            db.UpdateJob(jobId, editJobTitle, editCompany, editStartDate, editEndDate, editDescription);
+            db.Reset();
+            editJobId = 0;
+            editJobTitle = string.Empty;
+            editCompany = string.Empty;
+            editStartDate = default;
+            editEndDate = default;
+            editDescription = string.Empty;
+        }
+    }
+
+    private void CancelEditJob()
+    {
+        editJobId = 0;
+        editJobTitle = string.Empty;
+        editCompany = string.Empty;
+        editStartDate = default;
+        editEndDate = default;
+        editDescription = string.Empty;
     }
 }
+
+<style>
+    .job-tree {
+        margin-top: 20px;
+    }
+
+    .job-item {
+        margin-bottom: 20px;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+    }
+
+    .job-details {
+        margin-top: 10px;
+        padding-left: 20px;
+    }
+</style>

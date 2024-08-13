@@ -33,6 +33,16 @@ namespace FinalProjectResumeTuner
 			connection = new MySqlConnection(builder.ConnectionString);
 		}
 
+		public void Reset()
+        {
+			this.JobList.Clear();
+			this.JobDetailsList.Clear();
+			this.EduList.Clear();
+            this.LoadJobExp();
+			this.LoadJobDetails();
+			this.LoadEduExp();
+        }
+
 		// Open the connection to the database, return true if successful, false if not
 		public bool OpenConnection()
 		{
@@ -111,6 +121,28 @@ namespace FinalProjectResumeTuner
 		public int GetHighestJobID()
         {
             string query = "SELECT MAX(id) FROM jobexp";
+            int id = 0;
+
+            if (this.OpenConnection() == true)
+            {
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+                MySqlDataReader dataReader = cmd.ExecuteReader();
+
+                while (dataReader.Read())
+                {
+                    id = dataReader.GetInt32(0);
+                }
+
+                dataReader.Close();
+                this.CloseConnection();
+            }
+
+            return id;
+        }
+
+		public int GetHighestJobDetailID()
+        {
+            string query = "SELECT MAX(detailid) FROM jobdetails";
             int id = 0;
 
             if (this.OpenConnection() == true)
